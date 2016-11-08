@@ -1,6 +1,5 @@
 package ch.townsend.jamie.electro.solarmax.controller;
 
-import ch.townsend.jamie.electro.solarmax.SolarmaxTestDefaults;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +27,8 @@ public class SolarmaxControllerTest {
 
     private MockMvc mockMvc;
 
-    final private static String host = SolarmaxTestDefaults.defaultHost;
-    final private static int port = SolarmaxTestDefaults.defaultPort;
+    final private static String host = SolarmaxTestDefaults.host;
+    final private static int port = SolarmaxTestDefaults.port;
 
     @Before
     public void setup() {
@@ -47,7 +46,8 @@ public class SolarmaxControllerTest {
                 .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.status").value("ok"))
+//                .andExpect(jsonPath("$.connectionStatus").value("ok"))
+                .andExpect(jsonPath("$.connectionStatus").exists())
                 ;
 //        mvc.perform(post("/").with(csrf()));
 //        mvc.perform(post("/").with(csrf().useInvalidToken()))

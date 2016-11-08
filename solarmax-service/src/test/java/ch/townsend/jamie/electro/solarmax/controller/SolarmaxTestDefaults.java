@@ -1,4 +1,4 @@
-package ch.townsend.jamie.electro.solarmax;
+package ch.townsend.jamie.electro.solarmax.controller;
 
 public class SolarmaxTestDefaults {
 
