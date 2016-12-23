@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -8,23 +9,17 @@
 		<version>Brixton.SR6</version>
 	</parent>
 
-	<groupId>ch.townsend.jamie.electro.solarmax</groupId>
+	<groupId>com.servebeer.please.solarmax</groupId>
 	<artifactId>solarmax-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 
 	<description>Rest Service for SolarMax MT Series Power Inverters</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>ch.townsend.jamie.electro.solarmax</groupId>
+			<groupId>com.servebeer.please.solarmax</groupId>
 			<artifactId>solarmax-connector</artifactId>
 			<version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
 		</dependency>
 
 		<dependency>
@@ -38,6 +33,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -66,7 +66,9 @@
 				<configuration>
 					<!-- The spring-boot:run maven goal adds src/main/resources directly to the classpath (for hot reloading purposes).
 					This circumvents the resource filtering and this feature. -->
+					<!--
 					<addResources>false</addResources>
+					-->
 				</configuration>
 			</plugin>
 
@@ -98,6 +100,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
