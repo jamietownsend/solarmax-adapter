@@ -44,7 +44,7 @@ class SolarmaxDevice {
         try {
             return SolarmaxCommunicator.getCurrentlyGeneratedPower(host, port, deviceNumber);
         } catch (UnknownHostException e) {
-            // the nost is unknown. log it and return 0.
+            // the host is unknown. log it and return 0.
             log.debug(e.getMessage());
             return 0;
         } catch (SolarmaxException e) {
