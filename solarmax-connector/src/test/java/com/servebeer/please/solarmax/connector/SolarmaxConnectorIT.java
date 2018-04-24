@@ -33,4 +33,28 @@ public class SolarmaxConnectorIT {
             fail("Could not read the software version from host '" + SolarmaxTestDefaults.host + "' on port '" + SolarmaxTestDefaults.port + "'");
         }
     }
+
+    @Test
+    public void readErrorLog() throws Exception {
+        // sample request {FB;02;2B|64:EL00;EL01;EL02;EL03;EL04|091B}
+        // sample response {02;FB;8F|64:EL00=7E1070C,D783,4EDF,0;EL01=7E1070C,D717,4EDF,0;EL02=7E1070C,D496,4EDF,0;EL03=7E1070C,CCB0,4EDF,0;EL04=7E1070C,CC2B,4EDF,0|1F2E}
+        List<SolarmaxCommands.SolarmaxCommandKey> commands = new ArrayList<SolarmaxCommands.SolarmaxCommandKey>();
+        commands.add(SolarmaxCommands.SolarmaxCommandKey.E11);
+
+        Map<SolarmaxCommands.SolarmaxCommandKey, String> responseMap = null;
+
+        try {
+            responseMap = SolarmaxConnector.getValuesFromSolarmax(SolarmaxTestDefaults.host, SolarmaxTestDefaults.port, SolarmaxTestDefaults.deviceId, commands);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        System.out.println("Host:    " + SolarmaxTestDefaults.host);
+        System.out.println("Port:    " + SolarmaxTestDefaults.port);
+        if (responseMap.containsKey(SolarmaxCommands.SolarmaxCommandKey.EL00)) {
+            System.out.println("EL00: " + responseMap.get(SolarmaxCommands.SolarmaxCommandKey.EL00));
+        } else {
+            fail("Could not read the software version from host '" + SolarmaxTestDefaults.host + "' on port '" + SolarmaxTestDefaults.port + "'");
+        }
+    }
 }

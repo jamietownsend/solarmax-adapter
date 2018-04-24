@@ -21,13 +21,17 @@ public class SolarmaxConnector {
      */
     final private static int defaultPort = 12345;
 
-    private static final Logger log = LoggerFactory.getLogger(SolarmaxConnector.class);
+    private static Logger log = LoggerFactory.getLogger(SolarmaxConnector.class);
 
     /**
-     * default timeout for connections is 1 second
+     * default timeout for socket connections is 1 second
      */
+    private static int connectionTimeout = 1000;
 
-    private static int timeout = 1000;
+    /**
+     * default timeout for socket responses is 10 second
+     */
+    private static int responseTimeout = 10000;
 
 //    public static List<SolarmaxCommands.SolarmaxCommandKey, String> getCurrentValuesFromSolarmax(final String host, int port, final int deviceAddress) throws SolarmaxException, UnknownHostException {
 //
@@ -54,6 +58,7 @@ public class SolarmaxConnector {
         port = (port == 0) ? defaultPort : port;
         socket = getSocketConnection(host, port);
 
+        log.debug("    Requesting data from {}:{}({}) with timeout of {}ms", host, port, deviceAddress, responseTimeout);
         return getValuesFromSolarmax(socket, deviceAddress, commandList);
 
     }
@@ -110,6 +115,8 @@ public class SolarmaxConnector {
             // request = "{FB;01;46|64:KDY;KMT;KYR;KT0;TNF;TKK;PAC;PRL;IL1;IDC;UL1;UDC;SYS|1199}";
 
             // send the message out
+            log.debug("    ==>: {}", request);
+
             outputStream.write(request.getBytes());
 //            outputStream.flush();
 
@@ -137,7 +144,7 @@ public class SolarmaxConnector {
                 throw new SolarmaxException("Invalid response received: " + response);
             }
 
-            log.debug(response);
+            log.debug("    <==: {}", response);
             returnedValues = extractValuesFromResponse(response);
 
             /*
@@ -206,7 +213,10 @@ public class SolarmaxConnector {
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), timeout);
+            log.debug("    Connecting to " + host + ":" + port + " with a timeout of " + connectionTimeout);
+            socket.connect(new InetSocketAddress(host, port), connectionTimeout);
+            log.debug("    Connected.");
+            socket.setSoTimeout(responseTimeout);
         } catch (final UnknownHostException e) {
             throw e;
         } catch (final Exception e) {
@@ -240,15 +250,29 @@ public class SolarmaxConnector {
     /**
      * @return timeout for connections in milliseconds
      */
-    public static int getTimeout() {
-        return timeout;
+    public static int getConnectionTimeout() {
+        return connectionTimeout;
     }
 
     /**
-     * @param timeout timeout for connections in milliseconds
+     * @param connectionTimeout timeout for connections in milliseconds
      */
-    public static void setTimeout(int timeout) {
-        SolarmaxConnector.timeout = timeout;
+    public static void setConnectionTimeout(int connectionTimeout) {
+        SolarmaxConnector.connectionTimeout = connectionTimeout;
+    }
+
+    /**
+     * @return timeout for responses in milliseconds
+     */
+    public static int getResponseTimeout() {
+        return responseTimeout;
+    }
+
+    /**
+     * @param responseTimeout timeout for responses in milliseconds
+     */
+    public static void setResponseTimeout(int responseTimeout) {
+        SolarmaxConnector.responseTimeout = responseTimeout;
     }
 
 
