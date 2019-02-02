@@ -7,7 +7,7 @@ import java.util.Set;
 public class ArrayManager {
 
     // hard code it for now
-    private static Set<SolarmaxDevice> solarmaxDevices = new HashSet<SolarmaxDevice>(
+    private static final Set<SolarmaxDevice> solarmaxDevices = new HashSet<SolarmaxDevice>(
             Arrays.asList(new SolarmaxDevice("192.168.1.151", 12345, 1),
                     new SolarmaxDevice("192.168.1.152", 12345, 2)));
 

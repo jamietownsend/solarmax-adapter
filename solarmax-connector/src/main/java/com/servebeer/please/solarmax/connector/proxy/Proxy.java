@@ -25,9 +25,9 @@ public class Proxy {
 }
 
 class ProxyThread extends Thread {
-    private String description;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private final String description;
+    private final InputStream inputStream;
+    private final OutputStream outputStream;
 
     ProxyThread(String description, InputStream inputStream, OutputStream outputStream) {
         this.description = description;
@@ -35,6 +35,7 @@ class ProxyThread extends Thread {
         this.outputStream = outputStream;
     }
 
+    @Override
     public void run() {
         try {
             String line = "";

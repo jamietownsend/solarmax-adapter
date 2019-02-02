@@ -40,7 +40,7 @@ public class SolarmaxResponse {
         this.port = port;
     }
 
-    enum ConnectionStatusValue {
+    public enum ConnectionStatusValue {
         ok, error
     }
 

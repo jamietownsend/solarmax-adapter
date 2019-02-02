@@ -36,7 +36,7 @@ public class SolarmaxConnectorTest {
         // is there a ",0" or not??
         // final String sampleResponse = "{01;FB;6D|64:KDY=82;KMT=8F;KYR=23F7;KT0=72F1;TNF=1386;TKK=28;PAC=1F70;PRL=28;IL1=236;UL1=8F9;SYS=4E28,0|19E5}";
         final String sampleResponse = "{01;FB;6D|64:KDY=82;KMT=8F;KYR=23F7;KT0=72F1;TNF=1386;TKK=28;PAC=1F70;PRL=28;IL1=236;UL1=8F9;SYS=4E28|19E5}";
-        final Map<SolarmaxCommands.SolarmaxCommandKey, String> expectedResponseMap = new HashMap<SolarmaxCommands.SolarmaxCommandKey, String>();
+        final Map<SolarmaxCommands.SolarmaxCommandKey, String> expectedResponseMap = new HashMap<>();
 
         // TODO: 14.11.2016 these probably need to be converted to strings or ints or whatever...
         expectedResponseMap.put(KDY, "82");

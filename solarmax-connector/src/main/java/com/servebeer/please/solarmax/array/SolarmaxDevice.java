@@ -17,18 +17,24 @@ class SolarmaxDevice {
     /**
      * hostname or ip address of the SolarMax device
      */
-    private String host;
+    private final String host;
 
     /**
      * port number of the SolarMax device. Defaults to 12345
      */
-    private int port = 12345;
+    private final int port;
 
     /**
      * device number if multiple devices are chained together. Defaults to 0
      */
-    private int deviceNumber = 0;
+    private final int deviceNumber;
 
+    /**
+     * 
+     * @param host hostname or ip address of the SolarMax device
+     * @param port port number of the SolarMax device. Defaults to 12345
+     * @param deviceNumber device number if multiple devices are chained together. Defaults to 0
+     */
     SolarmaxDevice(String host, int port, int deviceNumber) {
         this.host = host;
         this.port = port;
@@ -43,17 +49,16 @@ class SolarmaxDevice {
     int getCurrentlyGeneratedPower() {
         try {
             return SolarmaxCommunicator.getCurrentlyGeneratedPower(host, port, deviceNumber);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SolarmaxException e) {
             // the host is unknown. log it and return 0.
             log.debug(e.getMessage());
             return 0;
-        } catch (SolarmaxException e) {
-            // there was some kind of exception. log it and return 0.
-            log.debug(e.getMessage());
-            return 0;
         }
+        // there was some kind of exception. log it and return 0.
+        
     }
 
+    @Override
     public String toString() {
         return "Host: " + host + System.lineSeparator() + "Port: " + port + System.lineSeparator() +
                 "Device Number: " + deviceNumber + System.lineSeparator() + "Online: " + ping() + System.lineSeparator();

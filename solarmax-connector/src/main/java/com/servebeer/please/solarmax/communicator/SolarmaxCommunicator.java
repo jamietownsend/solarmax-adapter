@@ -8,12 +8,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.LoggerFactory;
 
 public class SolarmaxCommunicator {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SolarmaxCommunicator.class);
+
     public static int getCurrentlyGeneratedPower(final String host, final int port, final int deviceNumber) throws SolarmaxException, UnknownHostException {
 
-        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<SolarmaxCommands.SolarmaxCommandKey>();
+        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<>();
         commandList.add(SolarmaxCommands.SolarmaxCommandKey.PAC);
 
         Map<SolarmaxCommands.SolarmaxCommandKey, String> result = SolarmaxConnector.getValuesFromSolarmax(host, port, deviceNumber, commandList);
@@ -25,18 +28,14 @@ public class SolarmaxCommunicator {
     public static boolean ping(final String host, final int port, final int deviceNumber) {
 
 //        SolarmaxPowerStatus status = new SolarmaxPowerStatus();
-
-        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<SolarmaxCommands.SolarmaxCommandKey>();
+        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<>();
         commandList.add(SolarmaxCommands.SolarmaxCommandKey.SWV);
 
         Map<SolarmaxCommands.SolarmaxCommandKey, String> result;
         try {
             result = SolarmaxConnector.getValuesFromSolarmax(host, port, deviceNumber, commandList);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        } catch (SolarmaxException e) {
-            e.printStackTrace();
+        } catch (UnknownHostException | SolarmaxException e) {
+            log.error(e.getMessage(), e);
             return false;
         }
 
