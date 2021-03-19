@@ -1,4 +1,4 @@
-package com.servebeer.please.solarmax.connector.proxy;
+package com.servebeer.please.solarmax.proxy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,19 +6,21 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.servebeer.please.solarmax.SolarmaxTestDefaults;
+
 /**
  * used for logging and debugging communication between clients and the SolarMax device
  */
 public class Proxy {
 
-    private static final int PROXY_PORT = 12345;
-    private static final int SOLARMAX_PORT = 12345;
-    private static final String SOLARMAX_HOST = "192.168.1.151";
+    private static final String PROXIED_HOST = SolarmaxTestDefaults.getRealHost();
+    private static final int PROXIED_PORT = SolarmaxTestDefaults.getRealPort();
+    private static final int PROXY_PORT = SolarmaxTestDefaults.getTestPort();
 
     public static void main(String[] args) throws IOException {
         ServerSocket proxyServerSocket = new ServerSocket(PROXY_PORT); // proxy port
         Socket proxySocket = proxyServerSocket.accept();
-        Socket solarMaxSocket = new Socket(SOLARMAX_HOST, SOLARMAX_PORT); // server address
+        Socket solarMaxSocket = new Socket(PROXIED_HOST, PROXIED_PORT); // server address
         new ProxyThread("proxy->SolarMax", proxySocket.getInputStream(), solarMaxSocket.getOutputStream()).start();
         new ProxyThread("SolarMax->proxy", solarMaxSocket.getInputStream(), proxySocket.getOutputStream()).start();
     }

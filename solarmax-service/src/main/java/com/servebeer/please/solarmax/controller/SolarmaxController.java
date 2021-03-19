@@ -1,13 +1,14 @@
 package com.servebeer.please.solarmax.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.servebeer.please.solarmax.PowerGenerationDetail;
 import com.servebeer.please.solarmax.array.ArrayManager;
 import com.servebeer.please.solarmax.connector.exception.SolarmaxException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +30,24 @@ class SolarmaxController {
     }
 
     /**
-     * gets the power generation status from the SolarMax device addressable under host:port
+     * gets the power generation status from the SolarMax array
      */
     @RequestMapping(value = "/currentlyGeneratedPower", method = RequestMethod.GET)
-    public int getCurrentlyGeneratedPower(final HttpServletRequest request, final HttpServletResponse response) throws SolarmaxException {
+    public int getCurrentlyGeneratedPower(final HttpServletRequest request, final HttpServletResponse response)
+            throws SolarmaxException {
 
         return ArrayManager.getCurrentlyGeneratedPower();
+
+    }
+
+    /**
+     * gets all relevant details from the SolarMax array
+     */
+    @RequestMapping(value = "/currentPowerGenerationDetails", method = RequestMethod.GET)
+    public List<PowerGenerationDetail> getCurrentPowerGenerationDetails(final HttpServletRequest request,
+            final HttpServletResponse response) throws SolarmaxException {
+
+        return ArrayManager.getCurrentPowerGenerationDetails();
 
     }
 }
