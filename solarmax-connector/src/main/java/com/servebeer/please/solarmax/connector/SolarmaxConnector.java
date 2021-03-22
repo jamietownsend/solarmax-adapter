@@ -1,15 +1,20 @@
 package com.servebeer.please.solarmax.connector;
 
-import com.servebeer.please.solarmax.connector.exception.SolarmaxConnectionException;
-import com.servebeer.please.solarmax.connector.exception.SolarmaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.servebeer.please.solarmax.connector.exception.SolarmaxConnectionException;
+import com.servebeer.please.solarmax.connector.exception.SolarmaxException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * With a little help from
@@ -34,12 +39,12 @@ public class SolarmaxConnector {
      */
     private static int responseTimeout = 10000;
 
-//    public static List<SolarmaxCommands.SolarmaxCommandKey, String> getCurrentValuesFromSolarmax(final String host, int port, final int deviceAddress) throws SolarmaxException, UnknownHostException {
-//
-//        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<SolarmaxCommands.SolarmaxCommandKey>();
-//        commandList = Arrays.asList(SolarmaxCommands.SolarmaxCommandKey.values());
-//        return getValuesFromSolarmax(host, port, deviceAddress, commandList);
-//    }
+    //    public static List<SolarmaxCommands.SolarmaxCommandKey, String> getCurrentValuesFromSolarmax(final String host, int port, final int deviceAddress) throws SolarmaxException, UnknownHostException {
+    //
+    //        List<SolarmaxCommands.SolarmaxCommandKey> commandList = new ArrayList<SolarmaxCommands.SolarmaxCommandKey>();
+    //        commandList = Arrays.asList(SolarmaxCommands.SolarmaxCommandKey.values());
+    //        return getValuesFromSolarmax(host, port, deviceAddress, commandList);
+    //    }
     /**
      * gets values from the SolarMax device addressable at host:port (at the
      * default location "0")
@@ -51,7 +56,8 @@ public class SolarmaxConnector {
      * @throws UnknownHostException if the host is unknown
      * @throws SolarmaxException if some other exception occurs
      */
-    public static Map<SolarmaxCommands.SolarmaxCommandKey, String> getValuesFromSolarmax(final String host, int port, final List<SolarmaxCommands.SolarmaxCommandKey> commandList) throws SolarmaxException, UnknownHostException {
+    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final List<String> commandList)
+            throws SolarmaxException, UnknownHostException {
         return getValuesFromSolarmax(host, port, 0, commandList);
     }
 
@@ -65,21 +71,23 @@ public class SolarmaxConnector {
      * @throws UnknownHostException if the host is unknown
      * @throws SolarmaxException if some other exception occurs
      */
-    public static Map<SolarmaxCommands.SolarmaxCommandKey, String> getValuesFromSolarmax(final String host, int port, final int deviceAddress, final List<SolarmaxCommands.SolarmaxCommandKey> commandList) throws SolarmaxException, UnknownHostException {
+    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final int deviceAddress,
+            final List<String> commandList) throws SolarmaxException, UnknownHostException {
 
         Socket socket;
 
         port = (port == 0) ? DEFAULT_PORT : port;
         socket = getSocketConnection(host, port);
 
-        log.debug("    Requesting data from {}:{}({}) with timeout of {}ms", host, port, deviceAddress, responseTimeout);
+        log.debug("    Requesting data from {}:{}({}) with timeout of {}ms", host, port, deviceAddress,
+                responseTimeout);
         return getValuesFromSolarmax(socket, deviceAddress, commandList);
 
     }
 
-    private static String getCommandString(List<SolarmaxCommands.SolarmaxCommandKey> commandList) {
+    private static String getCommandString(List<String> commandList) {
         String commandString = null;
-        for (SolarmaxCommands.SolarmaxCommandKey command : commandList) {
+        for (String command : commandList) {
             if (commandString == null) {
                 commandString = command.toString();
             } else {
@@ -89,7 +97,8 @@ public class SolarmaxConnector {
         return commandString;
     }
 
-    private static Map<SolarmaxCommands.SolarmaxCommandKey, String> getValuesFromSolarmax(final Socket socket, final int deviceAddress, final List<SolarmaxCommands.SolarmaxCommandKey> commandList) throws SolarmaxException {
+    private static Map<String, String> getValuesFromSolarmax(final Socket socket, final int deviceAddress,
+            final List<String> commandList) throws SolarmaxException {
         OutputStream outputStream = null;
         InputStream inputStream = null;
         try {
@@ -117,10 +126,11 @@ public class SolarmaxConnector {
         }
     }
 
-    private static Map<SolarmaxCommands.SolarmaxCommandKey, String> getValuesFromSolarmax(final OutputStream outputStream, final InputStream inputStream, final int deviceAddress, final List<SolarmaxCommands.SolarmaxCommandKey> commandList)
+    private static Map<String, String> getValuesFromSolarmax(final OutputStream outputStream,
+            final InputStream inputStream, final int deviceAddress, final List<String> commandList)
             throws SolarmaxException {
 
-        Map<SolarmaxCommands.SolarmaxCommandKey, String> returnedValues;
+        Map<String, String> returnedValues;
         String commandString = getCommandString(commandList);
         String request = SolarmaxCommands.contructRequest(deviceAddress, commandString);
         try {
@@ -131,7 +141,7 @@ public class SolarmaxConnector {
             log.debug("    ==>: {}", request);
 
             outputStream.write(request.getBytes());
-//            outputStream.flush();
+            //            outputStream.flush();
 
             String response = "";
             byte[] responseByte = new byte[1];
@@ -187,7 +197,7 @@ public class SolarmaxConnector {
              * $retval = $P_COMMAND['convert']($matches[2]);
              * return $retval;
              */
-//            return response.toString();
+            //            return response.toString();
             return returnedValues;
 
         } catch (IOException e) {
@@ -202,9 +212,9 @@ public class SolarmaxConnector {
      * "{01;FB;6D|64:KDY=82;KMT=8F;KYR=23F7;KT0=72F1;TNF=1386;TKK=28;PAC=1F70;PRL=28;IL1=236;UL1=8F9;SYS=4E28,0|19E5}"
      * @return a map of keys and values
      */
-    static Map<SolarmaxCommands.SolarmaxCommandKey, String> extractValuesFromResponse(String response) {
+    static Map<String, String> extractValuesFromResponse(String response) {
 
-        Map<SolarmaxCommands.SolarmaxCommandKey, String> responseMap = new HashMap<>();
+        Map<String, String> responseMap = new HashMap<>();
 
         // extract the body first
         // start by getting the part of the response between the two pipes
@@ -217,15 +227,19 @@ public class SolarmaxConnector {
         String[] entries = body.split(";");
         for (String entry : entries) {
 
-            SolarmaxCommands.SolarmaxCommandKey key = SolarmaxCommands.SolarmaxCommandKey.valueOf(entry.substring(0, 3));
+            if (entry.length() != 0) {
+                String key = entry.substring(0, 3);
 
-            responseMap.put(key, entry.substring(4));
+                String responseValue = (entry.length() >= 5) ? entry.substring(4) : null;
+                responseMap.put(key, responseValue);
+            }
         }
 
         return responseMap;
     }
 
-    private static Socket getSocketConnection(final String host, int port) throws SolarmaxConnectionException, UnknownHostException {
+    private static Socket getSocketConnection(final String host, int port)
+            throws SolarmaxConnectionException, UnknownHostException {
 
         port = (port == 0) ? DEFAULT_PORT : port;
 
