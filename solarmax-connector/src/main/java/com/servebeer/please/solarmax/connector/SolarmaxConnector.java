@@ -6,9 +6,11 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.servebeer.please.solarmax.connector.exception.SolarmaxConnectionException;
 import com.servebeer.please.solarmax.connector.exception.SolarmaxException;
@@ -56,7 +58,7 @@ public class SolarmaxConnector {
      * @throws UnknownHostException if the host is unknown
      * @throws SolarmaxException if some other exception occurs
      */
-    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final List<String> commandList)
+    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final Set<String> commandList)
             throws SolarmaxException, UnknownHostException {
         return getValuesFromSolarmax(host, port, 0, commandList);
     }
@@ -72,16 +74,45 @@ public class SolarmaxConnector {
      * @throws SolarmaxException if some other exception occurs
      */
     public static Map<String, String> getValuesFromSolarmax(final String host, int port, final int deviceAddress,
-            final List<String> commandList) throws SolarmaxException, UnknownHostException {
+            final Set<String> commandList) throws SolarmaxException, UnknownHostException {
+
+        ArrayList<String> commandArrayList = new ArrayList<>();
+        commandArrayList.addAll(commandList);
 
         Socket socket;
 
         port = (port == 0) ? DEFAULT_PORT : port;
-        socket = getSocketConnection(host, port);
 
-        log.debug("    Requesting data from {}:{}({}) with timeout of {}ms", host, port, deviceAddress,
-                responseTimeout);
-        return getValuesFromSolarmax(socket, deviceAddress, commandList);
+        Map<String, String> returnMap = new HashMap<String, String>();
+
+        // SolarMax can't answer correclty if too many commands are send in a single request, so limit it to 16 at a time
+        int maxRequests = 16;
+        int requestsRequired = (commandList.size() / maxRequests);
+        if (commandList.size() % maxRequests != 0) {
+            requestsRequired = requestsRequired + 1;
+        }
+        for (int requestNumber = 0; requestNumber < requestsRequired; requestNumber++) {
+            log.debug("    Requesting data from {}:{}({}) with timeout of {}ms", host, port, deviceAddress,
+                    responseTimeout);
+
+            int firstCommandNumber = requestNumber * maxRequests;
+            int lastCommandNumber = (requestNumber + 1) * maxRequests;
+            if (lastCommandNumber > commandList.size()) {
+                lastCommandNumber = commandList.size();
+            }
+            List<String> commandsToSend = commandArrayList.subList(firstCommandNumber, lastCommandNumber);
+
+            socket = getSocketConnection(host, port);
+            returnMap.putAll(getValuesFromSolarmax(socket, deviceAddress, commandsToSend));
+
+            // SolarMax can't deal with requests too close to one another, so just wait a moment
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+        return returnMap;
 
     }
 
@@ -215,6 +246,14 @@ public class SolarmaxConnector {
     static Map<String, String> extractValuesFromResponse(String response) {
 
         Map<String, String> responseMap = new HashMap<>();
+
+        System.out.println("Response: " + response);
+
+        // in case there is no response
+        if (response.indexOf("|") == -1) {
+            System.out.println("Response doesn't contain data: " + response);
+            return responseMap;
+        }
 
         // extract the body first
         // start by getting the part of the response between the two pipes
