@@ -2,6 +2,7 @@ package com.servebeer.please.solarmax.connector;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,26 +52,20 @@ public class SolarmaxConnectorFindCommands {
         int failedCommandRetry = 0;
         String lastFailedCommand = "";
 
-        for (String first : getCharacters()) {
-            for (String second : getCharacters()) {
-                for (String third : getCharacters()) {
-                    // commandsToCheck.add(first + second + third);
+        // for (String first : getCharacters()) {
+        //     for (String second : getCharacters()) {
+        //         for (String third : getCharacters()) {
+        //             // commandsToCheck.add(first + second + third);
 
-                    // specifically searching for "E" errors
-                    // commandsToCheck.add("E" + first + second + third);
-                }
-                commandsToCheck.add("E" + first + second);
-            }
-        }
+        //             // specifically searching for "E" errors
+        //             // commandsToCheck.add("E" + first + second + third);
+        //         }
+        //         commandsToCheck.add("E" + first + second);
+        //     }
+        // }
 
-        // commandsToCheck.addAll(Arrays.asList("ADR", "AMM", "BDN", "CAC", "CID", "CPG", "CPL", "CP0", "CP1", "CP2",
-        //         "CP3", "CP4", "CP5", "CYC", "DIN", "DMO", "ETH", "FH2", "FL2", "FQR", "FWV", "IAA", "IED", "IEE", "IEM",
-        //         "ILM", "IL1", "IL2", "IL3", "IP4", "ISL", "ITS", "KDY", "KFS", "KHR", "KHS", "KLD", "KLM", "KLY", "KMT",
-        //         "KTS", "KT0", "KYR", "LAN", "MAC", "PAC", "PAE", "PAM", "PDA", "PDC", "PFA", "PIN", "PLR", "PPC", "PRL",
-        //         "PSF", "PSR", "PSS", "QAC", "QMO", "QUC", "RA1", "RA2", "RB1", "RB2", "REL", "RH1", "RH2", "RPR", "RSD",
-        //         "SAC", "SAL", "SAM", "SCH", "SNM", "SPS", "SRD", "SRS", "SWV", "SYS", "TCP", "TI1", "TKK", "TL1", "TL3",
-        //         "TND", "TNF", "TNH", "TNL", "TP1", "TP2", "TP3", "TV0", "TV1", "TYP", "UA2", "UB2", "UGD", "UI1", "UI2",
-        //         "UI3", "ULH", "ULL", "UL1", "UL2", "UL3", "UMX", "UM1", "UM2", "UM3", "UPD", "UZK", "VCM"));
+        commandsToCheck.addAll(Arrays.asList("RH1", "RH2", "RH3", "TP1", "TP2", "TP3", "UL1", "UL2", "UL3", "UMX",
+                "UM1", "UM2", "UM3", "UPD", "TCP"));
 
         while (!commandsToCheck.isEmpty()) {
             if (commandsToCheck.size() % 100 == 0) {
@@ -136,7 +131,7 @@ public class SolarmaxConnectorFindCommands {
         responseMap = SolarmaxConnector.getValuesFromSolarmax(host, port, deviceId, commands);
 
         if (responseMap.containsKey(command)) {
-            System.out.print("Valid Response: " + responseMap.get(command));
+            System.out.println("Request: " + command + " Valid Response: " + responseMap.get(command));
             return true;
         }
         return false;
