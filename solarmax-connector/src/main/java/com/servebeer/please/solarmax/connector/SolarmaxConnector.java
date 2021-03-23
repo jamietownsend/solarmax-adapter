@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.servebeer.please.solarmax.connector.exception.SolarmaxConnectionException;
 import com.servebeer.please.solarmax.connector.exception.SolarmaxException;
@@ -58,7 +57,7 @@ public class SolarmaxConnector {
      * @throws UnknownHostException if the host is unknown
      * @throws SolarmaxException if some other exception occurs
      */
-    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final Set<String> commandList)
+    public static Map<String, String> getValuesFromSolarmax(final String host, int port, final List<String> commandList)
             throws SolarmaxException, UnknownHostException {
         return getValuesFromSolarmax(host, port, 0, commandList);
     }
@@ -74,7 +73,7 @@ public class SolarmaxConnector {
      * @throws SolarmaxException if some other exception occurs
      */
     public static Map<String, String> getValuesFromSolarmax(final String host, int port, final int deviceAddress,
-            final Set<String> commandList) throws SolarmaxException, UnknownHostException {
+            final List<String> commandList) throws SolarmaxException, UnknownHostException {
 
         ArrayList<String> commandArrayList = new ArrayList<>();
         commandArrayList.addAll(commandList);
@@ -247,7 +246,7 @@ public class SolarmaxConnector {
 
         Map<String, String> responseMap = new HashMap<>();
 
-        System.out.println("Response: " + response);
+        // System.out.println("Response: " + response);
 
         // in case there is no response
         if (response.indexOf("|") == -1) {
